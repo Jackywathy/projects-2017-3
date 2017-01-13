@@ -33,7 +33,7 @@ def handle_list_users(request):
 def not_found_handler(request):
     request.write(render('404.html', {'users': db.User.find_multiple(), 'signed_in':authenticate_cookie(request), 'username': get_username(request)}))
 
-server = Server(port=80)
+server = Server(port=8888)
 server.register(r'/', index_handler)
 server.register(r'/view/(\d+)/?', view.view_question_handler)
 server.register(r'/signup'      , user.signup_handler  , post=user.signup_handler_post)
