@@ -94,7 +94,7 @@ class CustomStaticFileHandler(web.StaticFileHandler):
 
 # we need to handle both errors on the default RequestHandlers (server.register(blah)) and
 # also from the static RequestHandler (/static/blah)
-server = Server( default_write_error=exception_handler, static_handler_class=CustomStaticFileHandler) # sets the default exception handler
+server = Server(port=int(os.environ.get("PORT", 80)), default_write_error=exception_handler, static_handler_class=CustomStaticFileHandler) # sets the default exception handler
 #               URL                       GET                              POST
 server.register(r'/'                        , index_handler                                                      )
 server.register(r'/view/(\d+)/?'            , check_valid_question_id_handler                                    )
@@ -113,4 +113,5 @@ server.register(r'/ajax/logged_in_validate' , _405_handler                     ,
 server.register(r'/.+', _404_handler)
 
 server.register(r'/monkey'      , monkey_handler)
+
 server.run()
