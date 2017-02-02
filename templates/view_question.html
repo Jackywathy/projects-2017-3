@@ -3,34 +3,37 @@
   <head>
     {% include _shared_head.html %}
     <link rel="stylesheet" type='text/css' href='/static/css/ViewPost.css'>
+    <script src='/static/js/jquery.js'></script>
+    <script src='/static/js/validate_postcomment.js'></script>
   </head>
   <body>
     {% include _nav_bar.html %}
     <main class="centered">
       <h1>Question</h1>
-      <form action="/post_comment/{{ photo_id }}" method="post" enctype = "multipart/form-data">
+      <form class="post-comment" action="{{ join('/post_comment/', str(post.id)) }}" method="post" enctype = "multipart/form-data">
         <fieldset>
-          <input type=text hidden="hidden" name='{{ photo_id }}'/>
-          <h2>{{ question }}</h2>
-          <img src="/static/{{ file }}" alt="{{ description }}">
-          <h3>{{ description }}</h3>
+          <h2>{{ post.title }}</h2>
+          <fieldset class="comment"> <img src= "{{ join('/static/uploads/user_image', post.user.picture) }}" class="comment"> <h3 class="comment">
+            {{ post.user.username }}:</h3>
+          </fieldset>
+          <img src="{{ join('/static/', post.file) }}" alt="Photo of item">
+          <h3>{{ post.description }}</h3>
           <p>
             <label for="addComment">Do you have an answer?</label>
             <textarea type="text" name="addComment" id="addComment"></textarea>
+            <p class="error"></p>
           </p>
           <p>
-            <input type="submit" value="Submit">
+            <input class="comment_submit" type="submit" value="Submit">
           </p>
         </fieldset>
       </form>
       <h2>Comments</h2>
       {% for comment in comments %}
       <fieldset class="comment">
-        {% if comment.image  %}
-        <img src="/static/{{ comment.image }}"/>
-        {% end if %}
+        <img src="{{ join('/static/uploads/user_image', post.user.picture) }}"/>
         <h3>
-          {{ user_ids[comment.user_id-1].username }}:</h3><p> {{ comment.text }}
+          {{ comment.user.username }}:</h3><p> {{ comment.text }}
         </p>
       </fieldset>
       {% end for %}

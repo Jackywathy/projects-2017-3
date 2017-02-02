@@ -45,9 +45,14 @@ for logger in (tornado.log.access_log, tornado.log.app_log, tornado.log.gen_log,
 
 
 class Server:
-    __slots__ = ('cookie_secret', 'default_handler', 'handlers', 'hostname', 'port', 'static_path')
+    __slots__ = ('cookie_secret', 'default_handler', 'handlers', 'hostname', 'port', 'static_path', "default_write_error", "static_handler_class", "_handle_request_exception")
 
-    def __init__(self, *, hostname='', port=8888, static_path='static'):
+    def __init__(self, *, hostname='', port=8888, static_path='static', static_handler_class=None, default_write_error=None, _handle_request_exception=None):
+        """
+        :param static_path: Path of static items
+        :param static_handler_class: Custom handler for static items or None
+        :param default_write_error: Default Error handler ( for all register() urls ), not including static_path exceptions
+        """
         if type(hostname) is not str:
             raise ValueError('hostname must be a string')
         if type(port) is not int or port <= 0:
@@ -61,6 +66,9 @@ class Server:
         self.handlers = []
         self.cookie_secret = None
         self.default_handler = None
+        self.default_write_error = default_write_error
+        self.static_handler_class = static_handler_class
+        self._handle_request_exception = _handle_request_exception
 
     def register(self, url_pattern, handler, *, delete=None, get=None, patch=None, post=None, put=None, url_name=None, write_error=None, **kwargs):
         if type(url_pattern) is not str:
@@ -73,7 +81,7 @@ class Server:
             patch_handler = patch or handler
             post_handler = post or handler
             put_handler = put or handler
-            write_error_handler = write_error
+            write_error_handler = write_error or self.default_write_error
 
             class Handler(tornado.web.RequestHandler):
                 def delete(self, *args, **kwargs):
@@ -153,6 +161,9 @@ class Server:
         me = self
         if self.default_handler is not None:
             class default_handler_class(tornado.web.RequestHandler):
+                def get_field(self, name, default=None, strip=True):
+                    return self.get_argument(name, default, strip=strip)
+
                 def delete(self, *args, **kwargs):
                     return me.default_handler(self, 'delete', *args, **kwargs)
 
@@ -175,9 +186,14 @@ class Server:
 
                 def put(self, *args, **kwargs):
                     return me.default_handler(self, 'put', *args, **kwargs)
+            if self._handle_request_exception:
+                default_handler_class._handle_request_exception = self._handle_request_exception
         else:
             default_handler_class = None
 
+        settings = {}
+        if self.static_handler_class:
+            settings['static_handler_class'] = self.static_handler_class
         # Create the app in debug mode (autoreload), binding to the appropriate address.
         app = tornado.web.Application(
             self.handlers,
@@ -185,6 +201,7 @@ class Server:
             debug=True,
             default_handler_class=default_handler_class,
             static_path=self.static_path,
+            **settings
         )
         app.listen(port=self.port, address=self.hostname)
         ncssbook_log.info('Reloading... waiting for requests on http://{}:{}'.format(self.hostname or 'localhost', self.port))

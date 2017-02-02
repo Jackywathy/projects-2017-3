@@ -20,7 +20,7 @@ with sqlite3.connect(DB_FILE) as conn:
     username TEXT NOT NULL UNIQUE,
     password TEXT NOT NULL,
     nickname TEXT,
-    email TEXT NOT NULL,
+    email TEXT NOT NULL UNIQUE,
     gender TEXT,
     dob TEXT,
     bio TEXT,
@@ -43,7 +43,7 @@ with sqlite3.connect(DB_FILE) as conn:
     '''
     )
 
-    # Create the comments table
+    # Create the `comments` table
     cur.execute(
     '''
     CREATE TABLE comments
@@ -53,12 +53,14 @@ with sqlite3.connect(DB_FILE) as conn:
     parent_id INTEGER,
     text TEXT NOT NULL,
     date TEXT NOT NULL,
-	loc_latitude REAL,
-	loc_longitude REAL,
+    profile_pic TEXT,
+    loc_latitude REAL,
+    loc_longitude REAL,
     score INTEGER,
     FOREIGN KEY(parent_id) REFERENCES comments(id),
     FOREIGN KEY(user_id) REFERENCES users(id),
-    FOREIGN KEY(post_id) REFERENCES posts(id))
+    FOREIGN KEY(post_id) REFERENCES posts(id),
+    FOREIGN KEY(profile_pic) REFERENCES users(picture))
     '''
     )
     conn.commit()
@@ -70,18 +72,20 @@ with sqlite3.connect(DB_FILE) as conn:
     cur.execute(
     '''
     INSERT INTO users VALUES
-    (NULL, 'george', '15a6aea1009a94bfb97901572724cf3e6c77c5bb22e6835d61fdd865cfcdfc1773e287f9df6e6e061244dffa475cfd0ce8033cf386039993a063249a25d2482a', 'G', 'some@email.com', 'Male', '01/01/2000', 'I''m a cool kid.', '', '11/1/2017'),
-    (NULL, 'tim', '15a6aea1009a94bfb97901572724cf3e6c77c5bb22e6835d61fdd865cfcdfc1773e287f9df6e6e061244dffa475cfd0ce8033cf386039993a063249a25d2482a', 'TimmyD', 'some@email.com', 'Male', '01/01/1990', 'Only tutor who knows what a Finite State Automata is :\).', '', '07/1/2017'),
-    (NULL, 'will', '15a6aea1009a94bfb97901572724cf3e6c77c5bb22e6835d61fdd865cfcdfc1773e287f9df6e6e061244dffa475cfd0ce8033cf386039993a063249a25d2482a', '', 'some@email.com', 'Male', '01/01/1993', 'Full Full-stack developer', '', '07/1/2017'),
-    (NULL, 'steph',	'15a6aea1009a94bfb97901572724cf3e6c77c5bb22e6835d61fdd865cfcdfc1773e287f9df6e6e061244dffa475cfd0ce8033cf386039993a063249a25d2482a', 'Stiff', 'some@email.com', 'Female', '01/01/2000', 'New Zealand is the best country', '', '08/01/2016'),
-    (NULL, 'evan', '15a6aea1009a94bfb97901572724cf3e6c77c5bb22e6835d61fdd865cfcdfc1773e287f9df6e6e061244dffa475cfd0ce8033cf386039993a063249a25d2482a', 'CompSci', 'some@email.com', 'Male',	'01/01/1995', 'Computer Science is obviously the best subject', '', '08/01/2016'),
-    (NULL, 'liam', '15a6aea1009a94bfb97901572724cf3e6c77c5bb22e6835d61fdd865cfcdfc1773e287f9df6e6e061244dffa475cfd0ce8033cf386039993a063249a25d2482a', '', 'some@email.com', 'Male', '01/01/1995', 'Don''t scare me please :O', '', '08/01/2017'),
-    (NULL, 'james', '15a6aea1009a94bfb97901572724cf3e6c77c5bb22e6835d61fdd865cfcdfc1773e287f9df6e6e061244dffa475cfd0ce8033cf386039993a063249a25d2482a', 'God', 'some@email.com', 'Male', '01/01/1989', 'God to NCSS students. I read stories to children for a living. I lost my hat :\(', '', '08/01/2016'),
-    (NULL, 'luke', '15a6aea1009a94bfb97901572724cf3e6c77c5bb22e6835d61fdd865cfcdfc1773e287f9df6e6e061244dffa475cfd0ce8033cf386039993a063249a25d2482a', 'GitOut', 'some@email.com', 'Male', '01/01/1999', 'Git King. Git Kraken. Git Merge without mr merge monkey',	'', '08/01/2016'),
-    (NULL, 'lucy', '15a6aea1009a94bfb97901572724cf3e6c77c5bb22e6835d61fdd865cfcdfc1773e287f9df6e6e061244dffa475cfd0ce8033cf386039993a063249a25d2482a', '', 'some@email.com', 'Female', '01/01/1990', 'Atlassian.', '', '08/01/2016'),
-    (NULL, 'julia', '15a6aea1009a94bfb97901572724cf3e6c77c5bb22e6835d61fdd865cfcdfc1773e287f9df6e6e061244dffa475cfd0ce8033cf386039993a063249a25d2482a', '', 'some@email.com', 'Female', '01/01/1990', ':)', '', '08/01/2016'),
-    (NULL, 'robot', '15a6aea1009a94bfb97901572724cf3e6c77c5bb22e6835d61fdd865cfcdfc1773e287f9df6e6e061244dffa475cfd0ce8033cf386039993a063249a25d2482a', 'Mr Robot', 'some@email.com', '', '01/01/1999', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean non mattis odio. Suspendisse mollis tristique sapien. Proin ac mi ornare nibh tempus luctus. Ut in ex scelerisque felis lacinia hendrerit. Nulla scelerisque ultricies tempus. Vestibulum ullamcorper eros mi, non ultricies erat dapibus sed. Aenean pretium nisi a magna vestibulum varius. Phasellus odio ex, porta quis erat rhoncus, malesuada cursus libero. Nam nec nibh eget felis eleifend vestibulum. Aenean lobortis eleifend dolor vitae elementum. Nullam tincidunt tellus id dolor tempus, laoreet hendrerit lorem commodo.', '', '01/01/1970'),
-    (NULL, 'generic', '15a6aea1009a94bfb97901572724cf3e6c77c5bb22e6835d61fdd865cfcdfc1773e287f9df6e6e061244dffa475cfd0ce8033cf386039993a063249a25d2482a', 'Generico', 'some@email.com', '', '01/01/2017', 'Your Generic User Bio', '', '11/01/2017')
+    (NULL, 'george', '15a6aea1009a94bfb97901572724cf3e6c77c5bb22e6835d61fdd865cfcdfc1773e287f9df6e6e061244dffa475cfd0ce8033cf386039993a063249a25d2482a', 'G'       , 'some1@email.com' , 'Male'   , '01/01/2000', 'I''m a cool kid.', 'nouser.png', '11/1/2017'),
+    (NULL, 'tim',    '15a6aea1009a94bfb97901572724cf3e6c77c5bb22e6835d61fdd865cfcdfc1773e287f9df6e6e061244dffa475cfd0ce8033cf386039993a063249a25d2482a', 'TimmyD'  , 'some2@email.com' , 'Male'   , '01/01/1990', 'Only tutor who knows what a Finite State Automata is :\).', 'nouser.png', '07/1/2017'),
+    (NULL, 'will',   '15a6aea1009a94bfb97901572724cf3e6c77c5bb22e6835d61fdd865cfcdfc1773e287f9df6e6e061244dffa475cfd0ce8033cf386039993a063249a25d2482a', ''        , 'some3@email.com' , 'Male'   , '01/01/1993', 'Full Full-stack developer', 'nouser.png', '07/1/2017'),
+    (NULL, 'steph',  '15a6aea1009a94bfb97901572724cf3e6c77c5bb22e6835d61fdd865cfcdfc1773e287f9df6e6e061244dffa475cfd0ce8033cf386039993a063249a25d2482a', 'Stiff'   , 'some4@email.com' , 'Female' , '01/01/2000', 'New Zealand is the best country', 'nouser.png', '08/01/2016'),
+    (NULL, 'evan',   '15a6aea1009a94bfb97901572724cf3e6c77c5bb22e6835d61fdd865cfcdfc1773e287f9df6e6e061244dffa475cfd0ce8033cf386039993a063249a25d2482a', 'CompSci' , 'some5@email.com' , 'Male'   , '01/01/1995', 'Computer Science is obviously the best subject', 'nouser.png', '08/01/2016'),
+    (NULL, 'liam',   '15a6aea1009a94bfb97901572724cf3e6c77c5bb22e6835d61fdd865cfcdfc1773e287f9df6e6e061244dffa475cfd0ce8033cf386039993a063249a25d2482a', ''        , 'some6@email.com' , 'Male'   , '01/01/1995', 'Don''t scare me please :O', 'nouser.png', '08/01/2017'),
+    (NULL, 'james',  '15a6aea1009a94bfb97901572724cf3e6c77c5bb22e6835d61fdd865cfcdfc1773e287f9df6e6e061244dffa475cfd0ce8033cf386039993a063249a25d2482a', 'God'     , 'some@7email.com' , 'Male'   , '01/01/1989', 'God to NCSS students. I read stories to children for a living. I lost my hat :\(', 'nouser.png', '08/01/2016'),
+    (NULL, 'luke',   '15a6aea1009a94bfb97901572724cf3e6c77c5bb22e6835d61fdd865cfcdfc1773e287f9df6e6e061244dffa475cfd0ce8033cf386039993a063249a25d2482a', 'GitOut'  , 'some@8email.com' , 'Male'   , '01/01/1999', 'Git King. Git Kraken. Git Merge without mr merge monkey', 'nouser.png', '08/01/2016'),
+    (NULL, 'lucy',   '15a6aea1009a94bfb97901572724cf3e6c77c5bb22e6835d61fdd865cfcdfc1773e287f9df6e6e061244dffa475cfd0ce8033cf386039993a063249a25d2482a', ''        , 'some@9email.com' , 'Female' , '01/01/1990', 'Atlassian.', 'nouser.png', '08/01/2016'),
+    (NULL, 'julia',  '15a6aea1009a94bfb97901572724cf3e6c77c5bb22e6835d61fdd865cfcdfc1773e287f9df6e6e061244dffa475cfd0ce8033cf386039993a063249a25d2482a', ''        , 'some@10email.com', 'Female' , '01/01/1990', ':)', 'nouser.png', '08/01/2016'),
+    (NULL, 'jack',   '15a6aea1009a94bfb97901572724cf3e6c77c5bb22e6835d61fdd865cfcdfc1773e287f9df6e6e061244dffa475cfd0ce8033cf386039993a063249a25d2482a', ''        , 'some@11email.com', 'Male'   , '01/01/2014', 'didnt make it to first db create :(', 'nouser.png', '08/01/2016'),
+    (NULL, 'trace',  '15a6aea1009a94bfb97901572724cf3e6c77c5bb22e6835d61fdd865cfcdfc1773e287f9df6e6e061244dffa475cfd0ce8033cf386039993a063249a25d2482a', ''        , 'some@email.com'  , 'Female' , '01/01/2014', ':))', 'nouser.png', '08/01/2016'),
+    (NULL, 'robot',  '15a6aea1009a94bfb97901572724cf3e6c77c5bb22e6835d61fdd865cfcdfc1773e287f9df6e6e061244dffa475cfd0ce8033cf386039993a063249a25d2482a', 'Mr Robot', 'some1@e2mail.com', ' '      , '01/01/1999', 'Lorem ipsum dolor sit amet,', 'nouser.png', '01/01/1970'),
+    (NULL, 'generic','15a6aea1009a94bfb97901572724cf3e6c77c5bb22e6835d61fdd865cfcdfc1773e287f9df6e6e061244dffa475cfd0ce8033cf386039993a063249a25d2482a', 'Generico', 'some14@email.com', ' '      , '01/01/2017', 'Your Generic User Bio', 'nouser.png', '11/01/2017')
     '''
     )
 
@@ -104,28 +108,28 @@ with sqlite3.connect(DB_FILE) as conn:
     cur.execute(
     '''
     INSERT INTO comments VALUES
-    (NULL, 0, 0, NULL, 'Nice meme!', '01/01/2017', 1, -33.8883064, 151.1941413),
-    (NULL, 1, 0, 1, 'Nice meme!', '01/01/2017', 1, NULL, NULL),
-    (NULL, 4, 0, NULL, 'Nice meme!', '01/01/2017', 1, NULL, NULL),
-    (NULL, 4, 2, NULL, 'Nice meme!', '01/01/2017', 1, NULL, NULL),
-    (NULL, 4, 4, NULL, 'Nice meme!', '01/01/2017', 1, NULL, NULL),
-    (NULL, 6, 6, NULL, 'Nice meme!', '01/01/2017', 1, NULL, NULL),
-    (NULL, 7, 7, NULL, 'Nice meme!', '01/01/2017', 1, NULL, NULL),
-    (NULL, 9, 8, NULL, 'Nice meme!', '01/01/2017', 1, NULL, NULL),
-    (NULL, 4, 8, 9, 'Nice meme!', '01/01/2017', 1, -33.8883064, 151.1941413),
-    (NULL, 4, 8, 9, 'Nice meme!', '01/01/2017', 1, NULL, NULL),
-    (NULL, 4, 8, 10, 'Nice meme!', '01/01/2017', 1, NULL, NULL),
-    (NULL, 4, 10, NULL, 'Nice meme!', '01/01/2017', 1, -33.8883064, 151.1941413),
-    (NULL, 2, 10, NULL, 'Nice meme!', '01/01/2017', 1, NULL, NULL),
-    (NULL, 0, 11, NULL, 'Nice meme!', '01/01/2017', 1, NULL, NULL),
-    (NULL, 0, 14, NULL, 'Nice meme!', '01/01/2017', 1, NULL, NULL),
-    (NULL, 0, 17, NULL, 'Nice meme!', '01/01/2017', 1, NULL, NULL),
-    (NULL, 6, 17, NULL, 'Nice meme!', '01/01/2017', 1, NULL, NULL),
-    (NULL, 0, 18, NULL, 'Nice meme!', '01/01/2017', 1, NULL, NULL),
-    (NULL, 0, 20, NULL, 'Nice meme!', '01/01/2017', 1, NULL, NULL),
-    (NULL, 12, 20, 19, 'Nice meme!', '01/01/2017', 1, NULL, NULL),
-    (NULL, 0, 21, NULL, 'Nice meme!', '01/01/2017', 1, NULL, NULL),
-    (NULL, 0, 22, NULL, 'Nice meme!', '01/01/2017', 1, NULL, NULL)
+    (NULL, 0, 0, NULL, 'Nice meme!', '01/01/2017', '', -33.8883064, 151.1941413, 1),
+    (NULL, 1, 0, 1, 'Nice meme!', '01/01/2017', '', NULL, NULL, 1),
+    (NULL, 4, 0, NULL, 'Nice meme!', '01/01/2017', '', NULL, NULL, 1),
+    (NULL, 4, 2, NULL, 'Nice meme!', '01/01/2017', '', NULL, NULL, 1),
+    (NULL, 4, 4, NULL, 'Nice meme!', '01/01/2017', '', NULL, NULL, 1),
+    (NULL, 6, 6, NULL, 'Nice meme!', '01/01/2017', '', NULL, NULL, 1),
+    (NULL, 7, 7, NULL, 'Nice meme!', '01/01/2017', '', NULL, NULL, 1),
+    (NULL, 9, 8, NULL, 'Nice meme!', '01/01/2017', '', NULL, NULL, 1),
+    (NULL, 4, 8, 9, 'Nice meme!', '01/01/2017', '', -33.8883064, 151.1941413, 1),
+    (NULL, 4, 8, 9, 'Nice meme!', '01/01/2017', '', NULL, NULL, 1),
+    (NULL, 4, 8, 10, 'Nice meme!', '01/01/2017', '', NULL, NULL, 1),
+    (NULL, 4, 10, NULL, 'Nice meme!', '01/01/2017', '', -33.8883064, 151.1941413, 1),
+    (NULL, 2, 10, NULL, 'Nice meme!', '01/01/2017', '', NULL, NULL, 1),
+    (NULL, 0, 11, NULL, 'Nice meme!', '01/01/2017', '', NULL, NULL, 1),
+    (NULL, 0, 14, NULL, 'Nice meme!', '01/01/2017', '', NULL, NULL, 1),
+    (NULL, 0, 17, NULL, 'Nice meme!', '01/01/2017', '', NULL, NULL, 1),
+    (NULL, 6, 17, NULL, 'Nice meme!', '01/01/2017', '', NULL, NULL, 1),
+    (NULL, 0, 18, NULL, 'Nice meme!', '01/01/2017', '', NULL, NULL, 1),
+    (NULL, 0, 20, NULL, 'Nice meme!', '01/01/2017', '', NULL, NULL, 1),
+    (NULL, 12, 20, 19, 'Nice meme!', '01/01/2017', '', NULL, NULL, 1),
+    (NULL, 0, 21, NULL, 'Nice meme!', '01/01/2017', '', NULL, NULL, 1),
+    (NULL, 0, 22, NULL, 'Nice meme!', '01/01/2017', '', NULL, NULL, 1)
     '''
     )
 
